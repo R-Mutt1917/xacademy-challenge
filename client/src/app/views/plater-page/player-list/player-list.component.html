@@ -1,0 +1,245 @@
+<app-toast
+  [showToast]="showToast"
+  [toastMessage]="toastMessage"
+  [toastSize]="toastSize"
+  (onClose)="showToast = false"
+>
+</app-toast>
+
+<div class="table-responsive small">
+  <table class="table table-striped table-sm text-end table-fixed">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center" (click)="toggleSort('player_id')">
+          <i
+            class="bi"
+            [ngClass]="{
+              'bi-sort-numeric-down':
+                sortBy !== 'player_id' || sortDirection === 'asc',
+              'bi-sort-numeric-up':
+                sortBy === 'player_id' && sortDirection === 'desc'
+            }"
+          ></i>
+          ID
+        </th>
+        <th
+          scope="col"
+          class="text-center"
+          (click)="toggleSort('fifa_version')"
+        >
+          <i
+            class="bi"
+            [ngClass]="{
+              'bi-sort-numeric-down':
+                sortBy !== 'fifa_version' || sortDirection === 'asc',
+              'bi-sort-numeric-up':
+                sortBy === 'fifa_version' && sortDirection === 'desc'
+            }"
+          ></i>
+          Fifa Version
+        </th>
+        <th scope="col" class="text-center" (click)="toggleSort('fifa_update')">
+          <i
+            class="bi"
+            [ngClass]="{
+              'bi-sort-numeric-down':
+                sortBy !== 'fifa_update' || sortDirection === 'asc',
+              'bi-sort-numeric-up':
+                sortBy === 'fifa_update' && sortDirection === 'desc'
+            }"
+          ></i>
+          Fifa Update
+        </th>
+        <th scope="col" class="text-center" (click)="toggleSort('long_name')">
+          <i
+            class="bi"
+            [ngClass]="{
+              'bi-sort-alpha-down':
+                sortBy !== 'long_name' || sortDirection === 'asc',
+              'bi-sort-alpha-up':
+                sortBy === 'long_name' && sortDirection === 'desc'
+            }"
+          ></i>
+          Name
+        </th>
+        <th scope="col" class="text-center" (click)="toggleSort('club_name')">
+          <i class="bi bi-building"></i> Club
+        </th>
+        <th
+          scope="col"
+          class="text-center"
+          (click)="toggleSort('player_positions')"
+        >
+          <i class="bi bi-person-badge"></i> Position
+        </th>
+        <th scope="col" class="text-center">Details</th>
+        <th *ngIf="isLoggedIn" scope="col" class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of playersList; let i = index">
+        <td class="text-center">{{ player.player_id }}</td>
+        <td class="text-center">{{ player.fifa_version }}</td>
+        <td class="text-center">{{ player.fifa_update }}</td>
+        <td class="text-center">{{ player.long_name }}</td>
+        <td class="text-center">{{ player.club_name }}</td>
+        <td class="text-center">{{ player.player_positions }}</td>
+        <td class="text-center">
+          <a class="link" (click)="openModal('detailModal', player)"
+            >Show details</a
+          >
+        </td>
+        <td *ngIf="isLoggedIn" class="text-center">
+          <button
+            title="Editar player"
+            class="btn btn-sm btn-primary"
+            aria-label="Edit"
+            style="margin-right: 5px"
+            (click)="openModal('editModal', player)"
+          >
+            <i class="bi bi-pencil-fill"></i>
+          </button>
+          <button
+            title="Eliminar player"
+            class="btn btn-sm btn-danger"
+            aria-label="Delete"
+            (click)="openModal('confirmDeleteModal', player)"
+          >
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="playersList.length === 0" class="text-center mt-3">
+    <p>No se encontraron players</p>
+  </div>
+</div>
+
+<div
+  class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3"
+>
+  <div class="mb-2 mb-md-0">
+    <label for="itemsPerPage" class="form-label">Items per page:</label>
+    <select
+      id="itemsPerPage"
+      class="form-select form-select-sm"
+      (change)="updateItemsPerPage($event)"
+    >
+      <option *ngFor="let limit of [10, 15, 20, 50]" [value]="limit">
+        {{ limit }}
+      </option>
+    </select>
+  </div>
+
+  <nav aria-label="Page navigation" class="d-flex">
+    <ul class="pagination justify-content-center mb-0">
+      <li class="page-item" [ngClass]="{ disabled: currentPage === 1 }">
+        <button
+          class="page-link"
+          (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+        >
+          Previous
+        </button>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+      </li>
+      <li
+        class="page-item"
+        [ngClass]="{ disabled: currentPage === totalPages || totalPages === 0 }"
+      >
+        <button
+          class="page-link"
+          (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages || totalPages === 0"
+        >
+          Next
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<app-player-edit
+  [loading]="isLoading"
+  [player]="selectedPlayer"
+  [error]="error"
+  (close)="closeModal('editModal')"
+  (save)="updatePlayer($event)"
+>
+</app-player-edit>
+
+<app-player-detail
+  [loading]="isLoading"
+  [error]="error"
+  [player]="selectedPlayer"
+  [historyPlayer]="historyPlayer"
+  (close)="closeModal('detailModal')"
+></app-player-detail>
+
+<div
+  class="modal fade"
+  id="confirmDeleteModal"
+  tabindex="-1"
+  aria-labelledby="confirmDeleteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 *ngIf="!error" class="modal-title" id="confirmDeleteModalLabel">
+          Confirm Delete
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="error" class="alert alert-danger" role="alert">
+          {{ error }}
+        </div>
+        <ng-container *ngIf="!error">
+          <ng-container *ngIf="!selectedPlayer || isLoading">
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p>Esperando...</p>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="!isLoading && selectedPlayer">
+            Are you sure you want to delete this player:
+            {{ selectedPlayer.long_name }}?
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="modal-footer">
+        <button
+          (click)="closeModal('confirmDeleteModal')"
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+        <button
+          *ngIf="!error"
+          type="button"
+          class="btn btn-danger"
+          [disabled]="isLoading || !selectedPlayer"
+          (click)="deletePlayer(selectedPlayer!)"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
