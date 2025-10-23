@@ -1,0 +1,84 @@
+th i {
+  margin-right: 5px; /* Ajusta el espacio entre el icono y el texto */
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination button {
+  margin: 0 10px;
+  padding: 5px 10px;
+}
+
+.form-select {
+  min-width: 120px;
+}
+.pagination .page-link {
+  color: #007bff; /* Color del texto por defecto */
+}
+
+.pagination .page-link:hover {
+  background-color: #0056b3; /* Color de fondo al pasar el mouse */
+  color: #ffffff; /* Color del texto al pasar el mouse */
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+}
+
+.table-fixed {
+  width: 100%;
+}
+
+.table-fixed th,
+.table-fixed td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 1201px) {
+  .table-fixed {
+    table-layout: fixed;
+  }
+
+  .table-fixed th:nth-child(1),
+  .table-fixed td:nth-child(1) {
+    width: 10%;
+  }
+
+  .table-fixed th:nth-child(2),
+  .table-fixed td:nth-child(2) {
+    width: 10%;
+  }
+
+  .table-fixed th:nth-child(3),
+  .table-fixed td:nth-child(3) {
+    width: 10%;
+  }
+
+  .table-fixed th:nth-child(4),
+  .table-fixed td:nth-child(4) {
+    width: 20%;
+  }
+
+  .table-fixed th:nth-child(5),
+  .table-fixed td:nth-child(5) {
+    width: 20%;
+  }
+
+  .table-fixed th:nth-child(6),
+  .table-fixed td:nth-child(6) {
+    width: 10%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+}
