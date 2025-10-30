@@ -1,6 +1,0 @@
-{
-  "devDependencies": {
-    "@types/jasmine": "^5.1.12",
-    "@types/node": "^24.9.1"
-  }
-}
